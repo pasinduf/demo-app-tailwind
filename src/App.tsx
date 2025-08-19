@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
-import { ClipboardIcon, RefreshIcon } from "@heroicons/react/outline";
+import { RefreshCw, Copy, Hourglass } from "lucide-react";
 import axios from "axios";
 import { API_URL } from "./constants";
 
 const App = () => {
+  const [local, setLocal] = useState(false);
   const [platform, setPlatform] = useState("");
   const [language, setLanguage] = useState("");
   const [title, setTitle] = useState("");
@@ -30,12 +31,16 @@ const App = () => {
   ];
 
 
+  const getBaseUrl = () => {
+    return local ? API_URL : "/api";
+  };
+
 
   useEffect(() => {
     if (!articleId) return;
 
     // Open SSE connection
-    const eventSource = new EventSource(`/api/article/status/${articleId}`);
+    const eventSource = new EventSource(`${getBaseUrl()}/article/status/${articleId}`);
 
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -60,7 +65,7 @@ const App = () => {
 
   const getContent = async (id: string) => {
     try {
-      const response = await axios.get(`/api/article/content/${id}`);
+      const response = await axios.get(`${getBaseUrl()}/article/content/${id}`);
       setContent(response.data);
     } catch (error) {
       console.error("Error fetching article content:", error);
@@ -87,7 +92,7 @@ const App = () => {
         title,
         keywords: [],
       };
-      const response = await axios.post(`/api/article`, payload);
+      const response = await axios.post(`${getBaseUrl()}/article`, payload);
       if(response) {
         setProcessing(true);
         setArticleId(response.data?.id);
@@ -109,6 +114,7 @@ const App = () => {
   };
 
 
+
   const onRefresh = () => {
     setPlatform("");
     setLanguage("");
@@ -124,7 +130,7 @@ const App = () => {
         <div className="w-full max-w-md bg-white p-6 rounded-2xl shadow-lg">
           <h2 className="text-2xl font-semibold mb-6 text-gray-800 flex items-center justify-between">
             <span>✍️ Submit Form</span>
-            <RefreshIcon className="h-6 w-6 text-gray-600 hover:text-indigo-600 cursor-pointer" onClick={onRefresh} />
+            <RefreshCw className="h-6 w-6 text-gray-600 hover:text-indigo-600 cursor-pointer" onClick={onRefresh} />
           </h2>
 
           {/* Dropdown */}
@@ -177,10 +183,13 @@ const App = () => {
             <button
               onClick={handleSubmit}
               disabled={submitting || processing}
-              className="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-lg shadow hover:bg-indigo-700 transition"
+              className="flex items-center justify-center flex-1 bg-indigo-600 text-white px-4 py-2 rounded-lg shadow 
+             hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Submit
+              {(submitting || processing) && <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>}
+              {submitting ? "Submitting..." : processing ? "Processing..." : "Submit"}
             </button>
+
             <button className="flex-1 bg-gray-300 text-gray-800 px-4 py-2 rounded-lg shadow hover:bg-gray-400 transition" onClick={handleCancel}>
               Cancel submit
             </button>
@@ -197,8 +206,10 @@ const App = () => {
           >
             {processing ? (
               <div className="flex flex-col items-center justify-center h-full w-full">
-                {/* <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div> */}
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">⏳ Your article is preparing</h3>
+                  <Hourglass className="h-24 w-24 animate-bounce" />
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                  Your article is preparing
+                </h3>
                 <p className="text-gray-600 text-center leading-relaxed">It will be ready in just a few moments...</p>
               </div>
             ) : (
@@ -208,7 +219,7 @@ const App = () => {
                     <>
                       <h3 className="text-xl font-semibold text-gray-800">{content.title}</h3>
                       <button className="ml-2 text-gray-500 hover:text-gray-800" onClick={() => handleCopy(content.title, "title")}>
-                        <ClipboardIcon className="w-5 h-5 -mr-3" />
+                        <Copy className="w-5 h-5 -mr-3" />
                       </button>
                     </>
                   )}
@@ -219,7 +230,7 @@ const App = () => {
                     <>
                       <p className="text-gray-600 leading-relaxed">{content && content.content}</p>
                       <button className="absolute top-0 right-0 text-gray-500 hover:text-gray-800" onClick={() => handleCopy(content.content, "content")}>
-                        <ClipboardIcon className="w-5 h-5 -mr-3" />
+                        <Copy className="w-5 h-5 -mr-3" />
                       </button>
                     </>
                   )}
