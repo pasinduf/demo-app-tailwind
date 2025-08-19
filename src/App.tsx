@@ -35,7 +35,7 @@ const App = () => {
     if (!articleId) return;
 
     // Open SSE connection
-    const eventSource = new EventSource(`${API_URL}/article/status/${articleId}`);
+    const eventSource = new EventSource(`/api/article/status/${articleId}`);
 
     eventSource.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -60,7 +60,7 @@ const App = () => {
 
   const getContent = async (id: string) => {
     try {
-      const response = await axios.get(`${API_URL}/article/content/${id}`);
+      const response = await axios.get(`/api/article/content/${id}`);
       setContent(response.data);
     } catch (error) {
       console.error("Error fetching article content:", error);
@@ -87,7 +87,7 @@ const App = () => {
         title,
         keywords: [],
       };
-      const response = await axios.post(`${API_URL}/article`, payload);
+      const response = await axios.post(`/api/article`, payload);
       if(response) {
         setProcessing(true);
         setArticleId(response.data?.id);
