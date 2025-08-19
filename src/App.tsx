@@ -5,7 +5,7 @@ import axios from "axios";
 import { API_URL } from "./constants";
 
 const App = () => {
-  const [local, setLocal] = useState(true);
+  const [local, setLocal] = useState(false);
   const [platform, setPlatform] = useState("");
   const [language, setLanguage] = useState("");
   const [title, setTitle] = useState("");
