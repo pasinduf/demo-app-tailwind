@@ -3,9 +3,11 @@ import "./App.css";
 import { RefreshCw, Copy, Hourglass } from "lucide-react";
 import axios from "axios";
 import { API_URL } from "./constants";
+import { environment } from "./enviornments/environment";
+
 
 const App = () => {
-  const [local, setLocal] = useState(false);
+  const [local, setLocal] = useState(true);
   const [platform, setPlatform] = useState("");
   const [language, setLanguage] = useState("");
   const [title, setTitle] = useState("");
@@ -126,7 +128,7 @@ const App = () => {
   return (
     <div className="h-screen w-full flex flex-col md:flex-row">
       {/* Left Side - Form */}
-      <div className="w-full md:w-1/2 flex items-center justify-center bg-gray-100 p-6 md:p-8">
+      <div className="w-full md:w-1/2 flex flex-col  items-center justify-center bg-gray-100 p-6 md:p-8">
         <div className="w-full max-w-md bg-white p-6 rounded-2xl shadow-lg">
           <h2 className="text-2xl font-semibold mb-6 text-gray-800 flex items-center justify-between">
             <span>✍️ Submit Form</span>
@@ -195,6 +197,9 @@ const App = () => {
             </button>
           </div>
         </div>
+        <div>
+          <p className="mt-4 w-full text-gray-700 font-medium">v{environment.appVersion}</p>
+        </div>
       </div>
 
       {/* Right Side - Empty Box */}
@@ -206,10 +211,8 @@ const App = () => {
           >
             {processing ? (
               <div className="flex flex-col items-center justify-center h-full w-full">
-                  <Hourglass className="h-24 w-24 animate-bounce" />
-                  <h3 className="text-lg font-semibold text-gray-800 mb-2">
-                  Your article is preparing
-                </h3>
+                <Hourglass className="h-24 w-24 animate-bounce" />
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">Your article is preparing</h3>
                 <p className="text-gray-600 text-center leading-relaxed">It will be ready in just a few moments...</p>
               </div>
             ) : (
